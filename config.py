@@ -1,18 +1,16 @@
-# --- PALETA DE COLORES ---
 COLORES = {
-    "fondo_main": "#050505",       
-    "fondo_sidebar": "#0a0a0a",    
-    "fondo_card": "#121212",       
-    "fondo_card_hover": "#1e1e1e", 
-    "acento": "#E2B714",           
-    "acento_hover": "#CFA003",     
-    "texto_titulos": "#ffffff",    
-    "texto_cuerpo": "#a0a0a0",     
-    "borde": "#202020",            
+    "fondo_main": "#050505",
+    "fondo_sidebar": "#0a0a0a",
+    "fondo_card": "#121212",
+    "fondo_card_hover": "#1e1e1e",
+    "acento": "#E2B714",
+    "acento_hover": "#CFA003",
+    "texto_titulos": "#ffffff",
+    "texto_cuerpo": "#a0a0a0",
+    "borde": "#202020",
     "rojo_error": "#cf6679"
 }
 
-# --- SITIOS A RASTREAR ---
 SITIOS = {
     "GitHub": "https://github.com/{}",
     "Instagram": "https://www.instagram.com/{}",
@@ -32,9 +30,57 @@ SITIOS = {
     "Patreon": "https://www.patreon.com/{}"
 }
 
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
-]
+TEXTOS = {
+    "es": {
+        "nav_scanner": "Rastreador",
+        "nav_historial": "Historial",
+        "nav_logs": "Debug Logs",
+        "nav_ajustes": "Ajustes",
+        "titulo_dashboard": "Dashboard",
+        "placeholder": "Nombre de usuario...",
+        "btn_rastrear": "RASTREAR",
+        "col_plataforma": "PLATAFORMA",
+        "col_enlace": "ENLACE DETECTADO",
+        "titulo_historial": "Historial de Sesión",
+        "titulo_logs": "Terminal del Sistema",
+        "titulo_ajustes": "Configuración",
+        "lbl_idioma": "Seleccionar Idioma:",
+        "msg_finalizado": "Finalizado.",
+        "msg_encontrados": "Encontrados: ",
+        # LOGS
+        "log_inicio": "Iniciando rastreo para:",
+        "log_conectando": "Conectando a",
+        "log_foto": "Foto encontrada.",
+        "log_encontrado": "¡ENCONTRADO!",
+        "log_falso": "Falso positivo detectado",
+        "log_error_img": "Error imagen",
+        "log_error_red": "Excepción de red",
+        "log_cambio": "Idioma cambiado a"
+    },
+    "en": {
+        "nav_scanner": "Tracker",
+        "nav_historial": "History",
+        "nav_logs": "Debug Logs",
+        "nav_ajustes": "Settings",
+        "titulo_dashboard": "Dashboard",
+        "placeholder": "Target username...",
+        "btn_rastrear": "SCAN TARGET",
+        "col_plataforma": "PLATFORM",
+        "col_enlace": "DETECTED LINK",
+        "titulo_historial": "Session History",
+        "titulo_logs": "System Terminal",
+        "titulo_ajustes": "Configuration",
+        "lbl_idioma": "Select Language:",
+        "msg_finalizado": "Finished.",
+        "msg_encontrados": "Found: ",
+        # LOGS
+        "log_inicio": "Starting scan for:",
+        "log_conectando": "Connecting to",
+        "log_foto": "Profile pic found.",
+        "log_encontrado": "FOUND!",
+        "log_falso": "False positive detected",
+        "log_error_img": "Image error",
+        "log_error_red": "Network exception",
+        "log_cambio": "Language changed to"
+    }
+}

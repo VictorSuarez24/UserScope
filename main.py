@@ -21,16 +21,16 @@ class UserScopeApp(ctk.CTk):
 
         self.datos_guardados = {}
         self.frames = {}
+        self.idioma = "es"
 
-        # Grid Layout Principal
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.crear_sidebar()
         self.crear_pantallas()
         
-        # Mostrar Escáner por defecto
         self.mostrar_pantalla("scanner")
+        self.log_sistema("Sistema iniciado correctamente.")
 
     def crear_sidebar(self):
         self.sidebar = ctk.CTkFrame(self, width=90, corner_radius=0, fg_color=config.COLORES["fondo_sidebar"])
@@ -38,11 +38,12 @@ class UserScopeApp(ctk.CTk):
         
         ctk.CTkLabel(self.sidebar, text="👁️", font=("Arial", 40)).pack(pady=(40, 30))
 
-        # Botones de Navegación con Lógica
-        self.btn_scanner = self.crear_boton_sidebar("Rastreador", "scanner")
-        self.btn_historial = self.crear_boton_sidebar("Historial", "historial")
+        self.btn_scanner = self.crear_boton_sidebar(config.TEXTOS[self.idioma]["nav_scanner"], "scanner")
+        self.btn_historial = self.crear_boton_sidebar(config.TEXTOS[self.idioma]["nav_historial"], "historial")
+        self.btn_logs = self.crear_boton_sidebar(config.TEXTOS[self.idioma]["nav_logs"], "logs")
+        self.btn_ajustes = self.crear_boton_sidebar(config.TEXTOS[self.idioma]["nav_ajustes"], "ajustes")
 
-        ctk.CTkLabel(self.sidebar, text="v1.01", text_color="gray").pack(side="bottom", pady=20)
+        ctk.CTkLabel(self.sidebar, text="v1.1", text_color="gray").pack(side="bottom", pady=20)
 
     def crear_boton_sidebar(self, texto, nombre_pantalla):
         btn = ctk.CTkButton(self.sidebar, text=texto, fg_color="transparent", 
@@ -53,53 +54,121 @@ class UserScopeApp(ctk.CTk):
         return btn
 
     def crear_pantallas(self):
-        # Contenedor derecho
         self.contenedor_derecho = ctk.CTkFrame(self, fg_color="transparent")
         self.contenedor_derecho.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
 
-        # --- PANTALLA 1: ESCÁNER ---
+        # 1. ESCÁNER
         self.frame_scanner = ctk.CTkFrame(self.contenedor_derecho, fg_color="transparent")
         self.setup_scanner_ui(self.frame_scanner)
         self.frames["scanner"] = self.frame_scanner
 
-        # --- PANTALLA 2: HISTORIAL ---
+        # 2. HISTORIAL
         self.frame_historial = ctk.CTkFrame(self.contenedor_derecho, fg_color="transparent")
         self.setup_historial_ui(self.frame_historial)
         self.frames["historial"] = self.frame_historial
 
-    def mostrar_pantalla(self, nombre):
-        for frame in self.frames.values():
-            frame.pack_forget()
+        # 3. LOGS
+        self.frame_logs = ctk.CTkFrame(self.contenedor_derecho, fg_color="transparent")
+        self.setup_logs_ui(self.frame_logs)
+        self.frames["logs"] = self.frame_logs
         
-        if nombre == "scanner":
-            self.btn_scanner.configure(text_color=config.COLORES["acento"])
-            self.btn_historial.configure(text_color="gray")
-        else:
-            self.btn_scanner.configure(text_color="gray")
-            self.btn_historial.configure(text_color=config.COLORES["acento"])
+        # 4. AJUSTES
+        self.frame_ajustes = ctk.CTkFrame(self.contenedor_derecho, fg_color="transparent")
+        self.setup_ajustes_ui(self.frame_ajustes)
+        self.frames["ajustes"] = self.frame_ajustes
 
-        # Mostrar la elegida
+    def mostrar_pantalla(self, nombre):
+        for frame in self.frames.values(): frame.pack_forget()
+        
+        self.btn_scanner.configure(text_color="gray")
+        self.btn_historial.configure(text_color="gray")
+        self.btn_logs.configure(text_color="gray")
+        self.btn_ajustes.configure(text_color="gray")
+
+        if nombre == "scanner": self.btn_scanner.configure(text_color=config.COLORES["acento"])
+        elif nombre == "historial": self.btn_historial.configure(text_color=config.COLORES["acento"])
+        elif nombre == "logs": self.btn_logs.configure(text_color=config.COLORES["acento"])
+        elif nombre == "ajustes": self.btn_ajustes.configure(text_color=config.COLORES["acento"])
+        
         self.frames[nombre].pack(fill="both", expand=True)
+        if nombre == "historial": self.cargar_historial_visual()
 
-        if nombre == "historial":
-            self.cargar_historial_visual()
+    def setup_ajustes_ui(self, parent):
+        self.lbl_titulo_ajustes = ctk.CTkLabel(parent, text=config.TEXTOS[self.idioma]["titulo_ajustes"], font=("Roboto", 26, "bold"), text_color="white")
+        self.lbl_titulo_ajustes.pack(anchor="w", pady=(0, 20))
 
-    # ================= UI ESCÁNER =================
+        frame_idioma = ctk.CTkFrame(parent, fg_color=config.COLORES["fondo_card"], corner_radius=10)
+        frame_idioma.pack(fill="x", pady=10, padx=5)
+
+        self.lbl_sel_idioma = ctk.CTkLabel(frame_idioma, text=config.TEXTOS[self.idioma]["lbl_idioma"], font=("Roboto", 14), text_color="white")
+        self.lbl_sel_idioma.pack(side="left", padx=20, pady=20)
+
+        self.combo_idioma = ctk.CTkOptionMenu(frame_idioma, values=["Español", "English"],
+                                              fg_color=config.COLORES["acento"], text_color="black",
+                                              button_color=config.COLORES["acento_hover"],
+                                              command=self.cambiar_idioma)
+        self.combo_idioma.pack(side="right", padx=20, pady=20)
+        self.combo_idioma.set("Español")
+
+    def cambiar_idioma(self, seleccion):
+        self.idioma = "es" if seleccion == "Español" else "en"
+        txt = config.TEXTOS[self.idioma]
+
+        # Actualizar Sidebar
+        self.btn_scanner.configure(text=txt["nav_scanner"])
+        self.btn_historial.configure(text=txt["nav_historial"])
+        self.btn_logs.configure(text=txt["nav_logs"])
+        self.btn_ajustes.configure(text=txt["nav_ajustes"])
+
+        # Actualizar Títulos (incluyendo Logs)
+        self.lbl_titulo_scan.configure(text=txt["titulo_dashboard"])
+        self.lbl_titulo_hist.configure(text=txt["titulo_historial"])
+        self.lbl_titulo_logs.configure(text=txt["titulo_logs"]) 
+        self.lbl_titulo_ajustes.configure(text=txt["titulo_ajustes"])
+        
+        # Actualizar Resto
+        self.entrada_usuario.configure(placeholder_text=txt["placeholder"])
+        self.btn_main_scan.configure(text=txt["btn_rastrear"])
+        self.lbl_col_plat.configure(text=txt["col_plataforma"])
+        self.lbl_col_link.configure(text=txt["col_enlace"])
+        self.lbl_sel_idioma.configure(text=txt["lbl_idioma"])
+        
+        self.log_sistema(f"{txt['log_cambio']} {self.idioma.upper()}")
+
+    def setup_logs_ui(self, parent):
+        self.lbl_titulo_logs = ctk.CTkLabel(parent, text=config.TEXTOS[self.idioma]["titulo_logs"], font=("Roboto", 26, "bold"), text_color="white")
+        self.lbl_titulo_logs.pack(anchor="w", pady=(0, 20))
+        
+        self.caja_logs = ctk.CTkTextbox(parent, font=("Consolas", 12), text_color="#00ff00", fg_color="black")
+        self.caja_logs.pack(fill="both", expand=True)
+        self.caja_logs.insert("0.0", "--- INICIANDO USERSCOPE KERNEL ---\n")
+        self.caja_logs.configure(state="disabled")
+
+    def log_sistema(self, mensaje):
+        hora = datetime.now().strftime("%H:%M:%S")
+        texto_final = f"[{hora}] > {mensaje}\n"
+        
+        self.caja_logs.configure(state="normal")
+        self.caja_logs.insert("end", texto_final)
+        self.caja_logs.see("end")
+        self.caja_logs.configure(state="disabled")
+
     def setup_scanner_ui(self, parent):
-        ctk.CTkLabel(parent, text="Dashboard", font=("Roboto", 26, "bold"), text_color="white").pack(anchor="w", pady=(0, 20))
-
-        # Buscador
+        self.lbl_titulo_scan = ctk.CTkLabel(parent, text=config.TEXTOS[self.idioma]["titulo_dashboard"], font=("Roboto", 26, "bold"), text_color="white")
+        self.lbl_titulo_scan.pack(anchor="w", pady=(0, 20))
+        
         search_cont = ctk.CTkFrame(parent, fg_color="transparent")
         search_cont.pack(fill="x", pady=5)
         
-        self.entrada_usuario = ctk.CTkEntry(search_cont, placeholder_text="Username...", height=50, font=("Roboto", 16),
+        self.entrada_usuario = ctk.CTkEntry(search_cont, placeholder_text=config.TEXTOS[self.idioma]["placeholder"], height=50, font=("Roboto", 16),
                                             corner_radius=25, fg_color=config.COLORES["fondo_card"], 
                                             border_color=config.COLORES["borde"], text_color="white")
         self.entrada_usuario.pack(side="left", fill="x", expand=True, padx=(0, 15))
         
-        ctk.CTkButton(search_cont, text="RASTREAR", font=("Roboto", 12, "bold"), height=50, width=140, corner_radius=25,
+        self.btn_main_scan = ctk.CTkButton(search_cont, text=config.TEXTOS[self.idioma]["btn_rastrear"], font=("Roboto", 12, "bold"), height=50, width=140, corner_radius=25,
                       fg_color=config.COLORES["acento"], text_color="black", hover_color=config.COLORES["acento_hover"],
-                      command=self.iniciar_busqueda).pack(side="right")
+                      command=self.iniciar_busqueda)
+        self.btn_main_scan.pack(side="right")
 
         self.barra = ctk.CTkProgressBar(parent, height=4, progress_color=config.COLORES["acento"])
         self.barra.set(0)
@@ -109,17 +178,22 @@ class UserScopeApp(ctk.CTk):
         self.lbl_estado = ctk.CTkLabel(parent, text="", text_color="gray", font=("Roboto", 12))
         self.lbl_estado.pack(anchor="w")
 
-        # Tabla Resultados
+        header_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        header_frame.pack(fill="x", pady=(10,0))
+        self.lbl_col_plat = ctk.CTkLabel(header_frame, text=config.TEXTOS[self.idioma]["col_plataforma"], width=150, anchor="w", text_color="gray", font=("Roboto", 11, "bold"))
+        self.lbl_col_plat.pack(side="left", padx=10)
+        self.lbl_col_link = ctk.CTkLabel(header_frame, text=config.TEXTOS[self.idioma]["col_enlace"], anchor="w", text_color="gray", font=("Roboto", 11, "bold"))
+        self.lbl_col_link.pack(side="left", padx=10)
+
         self.scroll_resultados = ctk.CTkScrollableFrame(parent, fg_color="transparent")
         self.scroll_resultados.pack(fill="both", expand=True, pady=10)
 
-    # ================= UI HISTORIAL =================
     def setup_historial_ui(self, parent):
-        ctk.CTkLabel(parent, text="Historial de Sesión", font=("Roboto", 26, "bold"), text_color="white").pack(anchor="w", pady=(0, 20))
+        self.lbl_titulo_hist = ctk.CTkLabel(parent, text=config.TEXTOS[self.idioma]["titulo_historial"], font=("Roboto", 26, "bold"), text_color="white")
+        self.lbl_titulo_hist.pack(anchor="w", pady=(0, 20))
         self.scroll_historial = ctk.CTkScrollableFrame(parent, fg_color="transparent")
         self.scroll_historial.pack(fill="both", expand=True)
 
-    # ================= LÓGICA =================
     def iniciar_busqueda(self):
         usuario = self.entrada_usuario.get()
         if not usuario: return
@@ -129,7 +203,10 @@ class UserScopeApp(ctk.CTk):
         self.barra.pack(fill="x", pady=(15, 5))
         self.barra.start()
         
-        # Guardamos la fecha de la búsqueda
+        # Logs traducidos
+        txt_inicio = config.TEXTOS[self.idioma]["log_inicio"]
+        self.log_sistema(f"{txt_inicio} {usuario}") 
+        
         if usuario not in self.datos_guardados:
             self.datos_guardados[usuario] = {"fecha": datetime.now().strftime("%H:%M"), "resultados": []}
             
@@ -142,7 +219,7 @@ class UserScopeApp(ctk.CTk):
 
         for nombre, url in config.SITIOS.items():
             self.lbl_estado.configure(text=f"Analizando: {nombre}...")
-            res = cerebro.escanear_sitio(nombre, url, usuario)
+            res = cerebro.escanear_sitio(nombre, url, usuario, idioma=self.idioma, callback=self.log_sistema)
             
             if res:
                 self.datos_guardados[usuario]["resultados"].append(res)
@@ -151,14 +228,17 @@ class UserScopeApp(ctk.CTk):
             count += 1
             self.barra.set(count / total)
 
-        self.lbl_estado.configure(text="Finalizado.", text_color=config.COLORES["acento"])
+        txt_final = config.TEXTOS[self.idioma]["msg_finalizado"]
+        txt_encontrados = config.TEXTOS[self.idioma]["msg_encontrados"]
+        
+        self.lbl_estado.configure(text=txt_final, text_color=config.COLORES["acento"])
+        self.log_sistema(f"{txt_encontrados} {len(self.datos_guardados[usuario]['resultados'])}")
         self.barra.stop()
 
     def crear_fila_resultado(self, datos, contenedor):
         fila = ctk.CTkFrame(contenedor, fg_color=config.COLORES["fondo_card"], corner_radius=8, height=60)
         fila.pack(fill="x", pady=4)
 
-        # 1. Logo Plataforma
         if datos.get("logo_plataforma"):
             lbl_logo = ctk.CTkLabel(fila, image=datos["logo_plataforma"], text="")
             lbl_logo.pack(side="left", padx=(15, 5))
@@ -166,10 +246,8 @@ class UserScopeApp(ctk.CTk):
         else:
             ctk.CTkLabel(fila, text="🌐", font=("Arial", 20)).pack(side="left", padx=15)
 
-        # 2. Nombre Sitio
         ctk.CTkLabel(fila, text=datos["sitio"], font=("Roboto", 14, "bold"), text_color="white", width=120, anchor="w").pack(side="left")
 
-        # 3. Avatar Usuario
         if datos.get("imagen_usuario"):
              img_u = ctk.CTkLabel(fila, image=datos["imagen_usuario"], text="")
              img_u.pack(side="left", padx=10)
