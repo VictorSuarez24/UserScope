@@ -39,6 +39,7 @@ TEXTOS = {
         "titulo_dashboard": "Dashboard",
         "placeholder": "Nombre de usuario...",
         "btn_rastrear": "RASTREAR",
+        "btn_exportar": "EXPORTAR",
         "col_plataforma": "PLATAFORMA",
         "col_enlace": "ENLACE DETECTADO",
         "titulo_historial": "Historial de Sesión",
@@ -47,7 +48,6 @@ TEXTOS = {
         "lbl_idioma": "Seleccionar Idioma:",
         "msg_finalizado": "Finalizado.",
         "msg_encontrados": "Encontrados: ",
-        # LOGS
         "log_inicio": "Iniciando rastreo para:",
         "log_conectando": "Conectando a",
         "log_foto": "Foto encontrada.",
@@ -55,7 +55,9 @@ TEXTOS = {
         "log_falso": "Falso positivo detectado",
         "log_error_img": "Error imagen",
         "log_error_red": "Excepción de red",
-        "log_cambio": "Idioma cambiado a"
+        "log_cambio": "Idioma cambiado a",
+        "log_reporte_ok": "Reporte generado:",  
+        "log_reporte_err": "Error generando reporte:"
     },
     "en": {
         "nav_scanner": "Tracker",
@@ -65,6 +67,7 @@ TEXTOS = {
         "titulo_dashboard": "Dashboard",
         "placeholder": "Target username...",
         "btn_rastrear": "SCAN TARGET",
+        "btn_exportar": "EXPORT",
         "col_plataforma": "PLATFORM",
         "col_enlace": "DETECTED LINK",
         "titulo_historial": "Session History",
@@ -73,7 +76,6 @@ TEXTOS = {
         "lbl_idioma": "Select Language:",
         "msg_finalizado": "Finished.",
         "msg_encontrados": "Found: ",
-        # LOGS
         "log_inicio": "Starting scan for:",
         "log_conectando": "Connecting to",
         "log_foto": "Profile pic found.",
@@ -81,6 +83,8 @@ TEXTOS = {
         "log_falso": "False positive detected",
         "log_error_img": "Image error",
         "log_error_red": "Network exception",
-        "log_cambio": "Language changed to"
+        "log_cambio": "Language changed to",
+        "log_reporte_ok": "Report generated:",
+        "log_reporte_err": "Error generating report:"
     }
 }

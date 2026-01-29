@@ -7,6 +7,7 @@ from PIL import Image
 
 import config
 import cerebro
+import reportes
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("dark-blue")
@@ -22,6 +23,7 @@ class UserScopeApp(ctk.CTk):
         self.datos_guardados = {}
         self.frames = {}
         self.idioma = "es"
+        self.usuario_actual = None
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -129,6 +131,7 @@ class UserScopeApp(ctk.CTk):
         # Actualizar Resto
         self.entrada_usuario.configure(placeholder_text=txt["placeholder"])
         self.btn_main_scan.configure(text=txt["btn_rastrear"])
+        self.btn_exportar.configure(text=txt["btn_exportar"])
         self.lbl_col_plat.configure(text=txt["col_plataforma"])
         self.lbl_col_link.configure(text=txt["col_enlace"])
         self.lbl_sel_idioma.configure(text=txt["lbl_idioma"])
@@ -166,9 +169,15 @@ class UserScopeApp(ctk.CTk):
         self.entrada_usuario.pack(side="left", fill="x", expand=True, padx=(0, 15))
         
         self.btn_main_scan = ctk.CTkButton(search_cont, text=config.TEXTOS[self.idioma]["btn_rastrear"], font=("Roboto", 12, "bold"), height=50, width=140, corner_radius=25,
-                      fg_color=config.COLORES["acento"], text_color="black", hover_color=config.COLORES["acento_hover"],
-                      command=self.iniciar_busqueda)
+                    fg_color=config.COLORES["acento"], text_color="black", hover_color=config.COLORES["acento_hover"],
+                    command=self.iniciar_busqueda)
         self.btn_main_scan.pack(side="right")
+
+        self.btn_exportar = ctk.CTkButton(search_cont, text=config.TEXTOS[self.idioma]["btn_exportar"], font=("Roboto", 12, "bold"), height=50, width=120, corner_radius=25,
+                    fg_color="transparent", border_width=2, border_color=config.COLORES["acento"], text_color=config.COLORES["acento"],
+                    command=self.exportar_reporte)
+        self.btn_exportar.pack(side="right", padx=(0, 10))
+        self.btn_exportar.configure(state="disabled")
 
         self.barra = ctk.CTkProgressBar(parent, height=4, progress_color=config.COLORES["acento"])
         self.barra.set(0)
@@ -197,7 +206,8 @@ class UserScopeApp(ctk.CTk):
     def iniciar_busqueda(self):
         usuario = self.entrada_usuario.get()
         if not usuario: return
-        
+        self.usuario_actual = usuario
+        self.btn_exportar.configure(state="disabled")
         for w in self.scroll_resultados.winfo_children(): w.destroy()
         
         self.barra.pack(fill="x", pady=(15, 5))
@@ -219,6 +229,7 @@ class UserScopeApp(ctk.CTk):
 
         for nombre, url in config.SITIOS.items():
             self.lbl_estado.configure(text=f"Analizando: {nombre}...")
+            
             res = cerebro.escanear_sitio(nombre, url, usuario, idioma=self.idioma, callback=self.log_sistema)
             
             if res:
@@ -234,7 +245,22 @@ class UserScopeApp(ctk.CTk):
         self.lbl_estado.configure(text=txt_final, text_color=config.COLORES["acento"])
         self.log_sistema(f"{txt_encontrados} {len(self.datos_guardados[usuario]['resultados'])}")
         self.barra.stop()
+        self.btn_exportar.configure(state="normal")
+                
+    def exportar_reporte(self):
+        if not self.usuario_actual or self.usuario_actual not in self.datos_guardados:
+            return
+        resultados = self.datos_guardados[self.usuario_actual]["resultados"]
+        txt_ok = config.TEXTOS[self.idioma]["log_reporte_ok"]
+        txt_err = config.TEXTOS[self.idioma]["log_reporte_err"]
 
+        exito, ruta = reportes.generar_html(self.usuario_actual, resultados)
+        
+        if exito:
+            self.log_sistema(f"{txt_ok} {ruta}")
+        else:
+            self.log_sistema(f"{txt_err} {ruta}")
+            
     def crear_fila_resultado(self, datos, contenedor):
         fila = ctk.CTkFrame(contenedor, fg_color=config.COLORES["fondo_card"], corner_radius=8, height=60)
         fila.pack(fill="x", pady=4)
