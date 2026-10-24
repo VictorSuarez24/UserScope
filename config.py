@@ -13,7 +13,14 @@ COLORES = {
 SITIOS = {
     "GitHub": "https://github.com/{}",
     "Instagram": "https://www.instagram.com/{}",
-    "Twitter/X": "https://twitter.com/{}",
+    "Twitter/X": "https://x.com/{}",
     "Facebook": "https://www.facebook.com/{}",
-    "Wikipedia": "https://en.wikipedia.org/wiki/User:{}"
+    "YouTube": "https://www.youtube.com/@{}",
+    "Twitch": "https://www.twitch.tv/{}",
 }
+
+USER_AGENT = "UserScope/2.0 (https://github.com/VictorSuarez24/UserScope)"
+TIMEOUT = (4, 10)
+MAX_CANDIDATOS = 48
+MAX_ENLACES_POR_PERFIL = 6
+MAX_WORKERS = 4
